@@ -1,6 +1,11 @@
 #!/usr/bin/ruby
 
 class Column
+  SPACE = 18
+  STATS = %w[
+    name count null_count
+  ]
+
   def initialize(name, number)
     @name = name
     @number = number
@@ -9,7 +14,13 @@ class Column
   end
 
   def update_stats(val)
+    @count += 1
     @null_count += 1 if val == ''
+    val = convert_type(val)
+  end
+
+  def convert_type(val)
+    # implemented in child classes
   end
 
   def stats
@@ -18,6 +29,10 @@ class Column
 end
 
 class NumberColumn < Column
+  NUM_STATS = %w[
+    name count null_count min max mean
+  ]
+
   def initialize(name, num)
     super
     @min = 0
@@ -25,8 +40,14 @@ class NumberColumn < Column
     @mean = 0
   end
 
+  def convert_type(val)
+    return val.to_f if val.match('.')
+    val.to_i
+  end
+
   def update_stats(val)
     super
+    val = convert_type(val)
     @min = val if val < @min
     @max = val if val > @max
   end
@@ -37,23 +58,45 @@ class NumberColumn < Column
 end
 
 class TextColumn < Column
+  TEXT_STATS = %w[
+    name count null_count count_shortest count_longest mean_length
+  ]
+
   def initialize(name, num)
     super
-    @min_length = ''
-    @max_length = ''
+    @shortest = nil
+    @longest = ''
+    @count_shortest = 0
+    @count_longest = 0
     @mean_length = 0
   end
 
   def update_stats(val)
     super
     length = val.length
-    @count += 1
+    @longest, @count_longest = val, length if length > @longest.length
+    unless @shortest.nil? || length >= @shortest.length
+      @shortest, @count_shortest = val, length
+    end
     @mean_length = ((@count -1) * @mean_length + length) / @count
-    @min_length = length if length < @min_length
-    @max_length = length if length > @max_length
   end
 
   def stats
-    super + [@min_length, @max_length, @mean_length]
+    super + [@count_shortest, @count_longest, @mean_length]
+  end
+
+  def to_s
+    len = @name.length
+    result = '-'*(len + SPACE) + "\n"
+    result +=
+      '|' + ' '*(SPACE/2-1) + @name +
+      ' '*(SPACE/2-1) + '|' + "\n"
+    result += '-'*(len + SPACE) + "\n"
+    stats.each_with_index do |stat, idx|
+      text = TEXT_STATS[idx] + ": #{stat}"
+      num_spaces = len + SPACE - text.length - 2
+      result += '|' + ' '*(num_spaces - 3) + text + ' '*3 + "|\n"
+    end
+    result += '-'*(len + SPACE) + "\n"
   end
 end

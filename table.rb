@@ -7,12 +7,8 @@ class Table
     @columns = []
   end
 
-  def [](i,j)
-    @columns[i][j]
-  end
-
-  def []=(i,j,val)
-    @columns[i][j] = val
+  def [](i)
+    @columns[i]
   end
 
   def define_columns(header)
@@ -32,6 +28,12 @@ class Table
   def stats
     @columns.map do |col|
       col.stats
+    end
+  end
+
+  def to_s
+    @columns.each do |col|
+      p col
     end
   end
 end
