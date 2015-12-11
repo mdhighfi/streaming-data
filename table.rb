@@ -33,7 +33,8 @@ class Table
 
   def to_s
     @columns.each do |col|
-      p col
+      puts col
+      puts
     end
   end
 end

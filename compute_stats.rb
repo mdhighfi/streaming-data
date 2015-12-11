@@ -18,10 +18,5 @@ IO.popen("./generator 10000") do |stream|
       end
     end
   end
-  i = 0
-  until table[i].nil?
-    puts table[i]
-    puts
-    i += 1
-  end
+  puts table
 end

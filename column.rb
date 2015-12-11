@@ -5,6 +5,13 @@ class Column
   STATS = %w[
     name count null_count
   ]
+  NUM_STATS = %w[
+    name count null_count min max mean
+  ]
+  TEXT_STATS = %w[
+    name count null_count count_shortest count_longest mean_length
+  ]
+
 
   def initialize(name, number)
     @name = name
@@ -29,9 +36,6 @@ class Column
 end
 
 class NumberColumn < Column
-  NUM_STATS = %w[
-    name count null_count min max mean
-  ]
 
   def initialize(name, num)
     super
@@ -73,9 +77,6 @@ class NumberColumn < Column
 end
 
 class TextColumn < Column
-  TEXT_STATS = %w[
-    name count null_count count_shortest count_longest mean_length
-  ]
 
   def initialize(name, num)
     super
@@ -89,10 +90,24 @@ class TextColumn < Column
   def update_stats(val)
     super
     length = val.length
-    @longest, @count_longest = val, length if length > @longest.length
-    unless @shortest.nil? || length >= @shortest.length
+    if length > @longest.length
+      @longest = val
+      length
+    end
+
+    if @shortest.nil?
+      @shortest = val
+      @count_shortest += 1
+    end
+
+    if (length < @shortest.length)
       @shortest, @count_shortest = val, length
     end
+
+    if (length == @shortest.length) && (val < @shortest)
+      @shortest, @count_shortest = val, length
+    end
+
     @mean_length = ((@count -1) * @mean_length + length) / @count
   end
 
