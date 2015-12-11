@@ -55,6 +55,21 @@ class NumberColumn < Column
   def stats
     super + [@min, @max, @mean]
   end
+
+  def to_s
+    len = @name.length
+    result = '-'*(len + SPACE) + "\n"
+    result +=
+      '|' + ' '*(SPACE/2-1) + @name +
+      ' '*(SPACE/2-1) + '|' + "\n"
+    result += '-'*(len + SPACE) + "\n"
+    stats.each_with_index do |stat, idx|
+      text = NUM_STATS[idx] + ": #{stat}"
+      num_spaces = len + SPACE - text.length - 2
+      result += '|' + ' '*(num_spaces - 3) + text + ' '*3 + "|\n"
+    end
+    result += '-'*(len + SPACE) + "\n"
+  end
 end
 
 class TextColumn < Column

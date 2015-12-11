@@ -4,7 +4,7 @@ require 'open3'
 require_relative 'table'
 require_relative 'column'
 
-IO.popen("./generator 10") do |stream|
+IO.popen("./generator 10000") do |stream|
   table = Table.new
   is_header = true
   while line = stream.gets
@@ -21,6 +21,7 @@ IO.popen("./generator 10") do |stream|
   i = 0
   until table[i].nil?
     puts table[i]
+    puts
     i += 1
   end
 end
