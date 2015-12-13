@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 class Column
-  SPACE = 20
+  SPACE = 26
   STATS = %w[
     count null_count
   ]
