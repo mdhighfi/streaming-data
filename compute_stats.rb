@@ -4,10 +4,22 @@ require 'open3'
 require_relative 'table'
 require_relative 'column'
 
-num_rows = ARGV[0].to_i
-unless (num_rows.is_a?(Fixnum) && num_rows.between?(1,1_000_000))
+num_rows = ARGV[0]
+if num_rows.nil?
+  num_rows = 1_000
+end
+num_rows = num_rows.to_i
+if num_rows.is_a?(Fixnum)
+  if num_rows > 1_000_000
+    num_rows = 1_000_000
+  elsif num_rows < 1
+    num_rows = 1
+  end
+else
   num_rows = 1000
 end
+
+puts "generating #{num_rows} records..."
 
 IO.popen("./generator #{num_rows}") do |stream|
   table = Table.new

@@ -113,25 +113,22 @@ class TextColumn < Column
       end
     end
 
-    @shortest ||= val unless val.empty?
-
     unless val.empty?
-      if !@shortest.nil?
-        if (length < @shortest.length)
-          @shortest = val
-          @count_shortest = 1
-        end
-
-        if (length == @shortest.length) && (val < @shortest)
-          @shortest = val
-          @count_shortest = 1
-        end
-      else
+      if @shortest.nil?
         @shortest = val
         @count_shortest = 1
+      elsif (length < @shortest.length)
+        @shortest = val
+        @count_shortest = 1
+      elsif (length == @shortest.length)
+        if (val < @shortest)
+          @shortest = val
+          @count_shortest = 1
+        else
+          @count_shortest += 1
+        end
       end
     end
-
 
     @mean_length = ((@count -1) * @mean_length + length) / @count.to_f
   end
