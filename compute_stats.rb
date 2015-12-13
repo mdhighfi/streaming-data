@@ -4,7 +4,12 @@ require 'open3'
 require_relative 'table'
 require_relative 'column'
 
-IO.popen("./generator 10000") do |stream|
+num_rows = ARGV[0].to_i
+unless (num_rows.is_a?(Fixnum) && num_rows.between?(1,1_000_000))
+  num_rows = 1000
+end
+
+IO.popen("./generator #{num_rows}") do |stream|
   table = Table.new
   is_header = true
   while line = stream.gets

@@ -32,9 +32,10 @@ class Table
   end
 
   def to_s
+    string = ''
     @columns.each do |col|
-      puts col
-      puts
+      string << col.to_s << "\n"
     end
+    string
   end
 end
